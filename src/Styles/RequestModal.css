@@ -1,0 +1,13 @@
+.requestmodal-style-11 { justify-content: space-between; align-items: flex-start; }
+.requestmodal-style-10 { width: 56px; height: 56px; border-radius: 16px; background: var(--redsoft); color: var(--red); display: flex; align-items: center; justify-content: center; }
+.requestmodal-style-9 { width: 48px; height: 48px; border-radius: 24px; background: var(--soft); display: flex; align-items: center; justify-content: center; }
+.requestmodal-style-8 { font-size: 28px; margin: 12px 0 0; }
+.requestmodal-style-7 { font-size: 15px; }
+.requestmodal-style-6 { height: 120px; align-items: flex-start; padding: 16px; }
+.requestmodal-style-5 { height: 100%; }
+.requestmodal-style-4 { color: var(--ink); }
+.requestmodal-style-3 { flex: 1; }
+.requestmodal-style-2 { font-size: 14px; margin: 18px 0; align-items: flex-start; gap: 10px; }
+.requestmodal-style-1 { color: var(--red); font-size: 14px; margin-bottom: 10px; }
+
+.request-location { width: 100%; text-align: left; }

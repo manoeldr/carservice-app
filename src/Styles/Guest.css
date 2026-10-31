@@ -1,0 +1,12 @@
+.guest-page { padding: 28px 24px; }
+.guest-page > h1 { font-size: 34px; }
+.guest-intro { text-align: center; margin: 48px 0 28px; }
+.guest-avatar { display: inline-flex; align-items: center; justify-content: center; width: 88px; height: 88px; border-radius: 50%; background: var(--redsoft); color: var(--red); margin-bottom: 22px; }
+.guest-intro h2 { font-size: 25px; margin-bottom: 12px; }
+.guest-intro p { color: var(--muted); font-size: 16px; line-height: 1.6; }
+.guest-links { margin-top: 30px; }
+.guest-links > button { display: flex; align-items: center; gap: 14px; width: 100%; padding: 18px; text-align: left; }
+.guest-links > button > svg { color: var(--muted); flex-shrink: 0; }
+.guest-links span { flex: 1; }
+.guest-links small { display: block; color: var(--muted); margin-top: 4px; font-size: 13px; }
+.guest-continue { display: block; margin: 28px auto 10px; font-size: 15px; }

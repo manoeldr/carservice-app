@@ -1,0 +1,12 @@
+.privacy-intro { background: var(--soft); padding: 20px; border-radius: 20px; }
+.privacy-intro h2 { font-size: 21px; }
+.privacy-intro p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-top: 10px; }
+.privacy-permission { display: flex; align-items: center; padding: 18px; gap: 14px; }
+.privacy-permission > div { flex: 1; }
+.privacy-permission b { font-size: 15px; }
+.privacy-permission p { color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 6px; }
+.privacy-file-input { display: none; }
+.privacy-import, .privacy-reset { padding: 20px; margin: 20px 0; }
+.privacy-import h3, .privacy-reset h3 { font-size: 18px; }
+.privacy-import p, .privacy-reset p { font-size: 14px; line-height: 1.6; color: var(--muted); margin-top: 10px; overflow-wrap: anywhere; }
+.privacy-delete { color: var(--red); margin: 18px 0 8px; }

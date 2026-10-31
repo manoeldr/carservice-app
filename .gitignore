@@ -1,0 +1,17 @@
+# Dependências e arquivos gerados
+node_modules/
+dist/
+work/
+outputs/
+*.log
+
+# Arquivos locais do sistema e editor
+.DS_Store
+._*
+.vscode/
+
+# Configurações privadas e backups de dados da conta
+.env
+.env.*
+!.env.example
+carservice-conta*.json

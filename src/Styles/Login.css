@@ -1,0 +1,12 @@
+.login-style-12 { padding: 0; }
+.login-style-11 { background: #000; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 70px 0 28px; color: #fff; }
+.login-style-10 { text-align: center; }
+.login-style-9 { font-style: italic; font-weight: 800; font-size: 25px; letter-spacing: .04em; }
+.login-style-8 { color: #E32A2F; }
+.login-style-7 { font-size: 15px; letter-spacing: .03em; color: #ddd; }
+.login-style-6 { padding: 28px 28px 24px; }
+.login-style-5 { color: var(--red); font-size: 14px; margin-top: 10px; }
+.login-style-4 { text-align: right; margin: 14px 0 18px; }
+.login-style-3 { font-size: 15px; }
+.login-style-2 { margin: 18px 0 12px; }
+.login-style-1 { margin-top: 22px; font-size: 16px; }

@@ -1,0 +1,25 @@
+.detail-style-25 { justify-content: space-between; }
+.detail-style-24 { padding: 0; }
+.detail-style-23 { border-radius: 0; aspect-ratio: 1.8; }
+.detail-style-22 { position: absolute; right: 12px; bottom: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 14px; padding: 6px 12px; border-radius: 14px; }
+.detail-style-21 { padding: 20px 24px; }
+.detail-style-20 { color: var(--red); font-weight: 700; font-size: 14px; letter-spacing: .02em; }
+.detail-style-19 { margin: 8px 0; }
+.detail-style-18 { display: flex; align-items: baseline; gap: 10px; }
+.detail-style-17 { font-size: 40px; font-weight: 800; }
+.detail-style-16 { color: var(--muted); font-size: 16px; }
+.detail-style-15 { margin: 22px 0; }
+.detail-style-14 { flex: 1; }
+.detail-style-13 { font-size: 18px; }
+.detail-style-12 { gap: 6px; color: var(--muted); margin-top: 4px; }
+.detail-style-11 { color: var(--red); }
+.detail-style-10 { color: var(--ink); }
+.detail-style-9 { font-size: 22px; font-weight: 700; }
+.detail-style-8 { font-size: 17px; line-height: 1.6; }
+.detail-style-7 { gap: 12px; margin: 22px 0; flex-wrap: wrap; }
+.detail-style-6 { background: var(--soft); color: var(--muted); padding: 10px 16px; border-radius: 12px; font-size: 15px; }
+.detail-style-5 { align-items: flex-start; }
+.detail-style-4 { color: var(--red); }
+.detail-style-3 { font-size: 18px; }
+.detail-style-2 { font-size: 16px; margin: 2px 0 0; }
+.detail-style-1 { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--line); }

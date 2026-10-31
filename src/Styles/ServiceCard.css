@@ -1,0 +1,4 @@
+.servicecard-style-4 { cursor: pointer; }
+.servicecard-style-3 { font-weight: 600; font-size: 17px; margin: 10px 0 4px; }
+.servicecard-style-2 { font-weight: 800; font-size: 20px; }
+.servicecard-style-1 { color: var(--muted); font-size: 14px; margin-top: 4px; line-height: 1.4; }

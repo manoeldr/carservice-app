@@ -1,0 +1,22 @@
+.location-mask { z-index: 6; }
+.location-modal { display: flex; flex-direction: column; max-height: 100%; }
+.location-heading { justify-content: space-between; margin-bottom: 12px; flex-shrink: 0; }
+.location-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--redsoft); color: var(--red); display: flex; align-items: center; justify-content: center; }
+.location-close { width: 40px; height: 40px; border-radius: 50%; background: var(--soft); display: flex; align-items: center; justify-content: center; }
+.location-modal h2 { font-size: 26px; letter-spacing: -.02em; }
+.location-modal .sub { font-size: 15px; }
+.location-device { margin: 18px 0 12px; flex-shrink: 0; }
+.location-device:disabled, .location-modal .btn:disabled { opacity: .6; cursor: wait; }
+.location-search { flex-shrink: 0; }
+.location-places { overflow-y: auto; min-height: 90px; max-height: 230px; margin-top: 12px; overscroll-behavior: contain; }
+.location-place { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px; border-radius: 12px; }
+.location-place > span { flex: 1; }
+.location-place small { display: block; color: var(--muted); margin-top: 3px; }
+.location-place.is-selected { background: var(--redsoft); color: var(--red); }
+.location-radius { width: 100%; height: 48px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); padding: 0 12px; flex-shrink: 0; }
+.location-selected { margin: 14px 0 8px; font-size: 14px; font-weight: 600; }
+.location-selected small { display: block; color: var(--muted); margin-top: 3px; }
+.location-note, .location-no-results { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.location-note { margin-bottom: 16px; }
+.location-error { color: var(--red); font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
+.location-modal > .btn { flex-shrink: 0; }

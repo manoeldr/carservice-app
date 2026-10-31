@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "user": { "name": "Lucas Martins", "email": "lucas.martins@email.com", "phone": "" },
+  "vehicles": [],
+  "preferences": { "notifications": true, "deviceLocation": true },
+  "location": { "id": "vila-mariana", "name": "Vila Mariana", "city": "São Paulo", "lat": -23.5902, "lon": -46.6359, "radius": 10 }
+}

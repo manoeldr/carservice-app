@@ -1,0 +1,18 @@
+.chats-style-18 { padding: 0 24px; }
+.chats-style-17 { justify-content: space-between; padding: 24px 0 18px; }
+.chats-style-16 { font-size: 36px; }
+.chats-style-15 { color: var(--red); }
+.chats-style-14 { background: var(--soft); border: 0; height: 56px; }
+.chats-style-13 { gap: 12px; margin: 18px 0 24px; }
+.chats-style-12 { flex: none; padding: 0 22px; height: 50px; }
+.chats-style-11 { flex: none; padding: 0 22px; height: 50px; }
+.chats-style-10 { padding: 18px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.chats-style-9 { width: 68px; height: 68px; font-size: 22px; }
+.chats-style-8 { flex: 1; min-width: 0; }
+.chats-style-7 { font-size: 19px; }
+.chats-style-6 { color: var(--muted); font-size: 15px; margin: 3px 0; }
+.chats-style-5 { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; color: var(--muted); }
+.chats-style-4 { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; align-self: flex-start; padding-top: 4px; }
+.chats-style-3 { font-size: 14px; color: var(--muted); }
+.chats-style-2 { text-align: center; margin-top: 40px; }
+.chats-style-1 { justify-content: center; gap: 8px; margin-top: 22px; }

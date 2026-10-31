@@ -1,0 +1,15 @@
+.help-page > h2 { font-size: 25px; }
+.help-search { margin: 24px 0; background: var(--soft); }
+.help-topic { border-bottom: 1px solid var(--line); }
+.help-topic summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; font-size: 16px; font-weight: 600; cursor: pointer; padding: 20px 0; list-style: none; }
+.help-topic summary::-webkit-details-marker { display: none; }
+.help-topic summary > svg { flex-shrink: 0; color: var(--muted); }
+.help-topic[open] summary > svg { transform: rotate(180deg); }
+.help-answer { padding-bottom: 20px; }
+.help-answer p { color: var(--muted); font-size: 15px; line-height: 1.65; }
+.help-answer button { margin-top: 14px; font-size: 14px; }
+.help-about { display: flex; gap: 12px; padding: 20px; margin: 28px 0 10px; }
+.help-about > svg { flex-shrink: 0; color: var(--red); }
+.help-about h3 { font-size: 17px; margin-bottom: 6px; }
+.help-about p { font-size: 14px; line-height: 1.6; color: var(--muted); }
+.help-empty { text-align: center; padding: 24px 0; }
