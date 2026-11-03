@@ -17,3 +17,5 @@ button.account-row:hover { background: var(--line); }
 .account-logout { margin: 28px auto; font-size: 17px; gap: 10px; }
 .account-version { font-size: 12px; }
 .account-footer-links { display: flex; justify-content: center; gap: 8px; font-size: 12px; color: var(--muted); margin: 8px 0 12px; }
+
+.account-role { margin-top: 8px; }

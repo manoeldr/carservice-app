@@ -1,0 +1,17 @@
+.request-card { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: 20px; padding: 18px; background: var(--bg); }
+.request-card-person { display: flex; align-items: center; gap: 10px; }
+.request-card-avatar { width: 40px; height: 40px; font-size: 14px; background: var(--soft); color: var(--ink); }
+.request-card-person > div { flex: 1; min-width: 0; }
+.request-card-person b { font-size: 15px; overflow-wrap: anywhere; }
+.request-card-person small { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+.request-card-category { background: var(--soft); color: var(--muted); border-radius: 8px; padding: 5px 7px; font-size: 11px; }
+.request-card-content { display: block; width: 100%; text-align: left; padding: 16px 0 10px; }
+.request-card-content h3 { font-size: 19px; margin-bottom: 8px; overflow-wrap: anywhere; }
+.request-card-content p { font-size: 14px; color: var(--muted); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.request-card-vehicle { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 13px; color: var(--ink); }
+.request-card-location { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; }
+.request-card-location svg { color: var(--red); flex-shrink: 0; }
+.request-card-footer { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 13px; margin-top: 14px; font-size: 12px; }
+.request-card-footer > span { flex: 1; color: var(--muted); }
+.request-card-footer > .lnk { display: flex; align-items: center; gap: 3px; font-size: 13px; }
+.request-card-save { display: flex; align-items: center; padding: 5px; }

@@ -386,7 +386,7 @@ export const SERVICES = [
   }),
 ];
 
-export const brl=v=>'R$ '+v;
+export const brl = value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: Number.isInteger(value) ? 0 : 2, maximumFractionDigits: 2 }).format(value);
 export const CHATS0=[
 {id:1,sid:1,by:'Auto Center Silva',ini:'AC',svc:'Troca de óleo e filtro',time:'10:42',unread:2,msgs:[['me','Olá! Esse valor vale para um Onix 2020?','10:30'],['them','Olá, Lucas! Sim, fica R$ 189 com óleo 5W-30, filtro e mão de obra.','10:33'],['them','Também conferimos os níveis e fazemos o descarte do óleo usado.','10:34'],['me','Ótimo! Posso levar amanhã às 10h?','10:40'],['them','Pode trazer às 10h. Te esperamos!','10:42']]},
 {id:2,sid:3,by:'Brilho Garage',ini:'BG',svc:'Lavagem completa',time:'09:18',unread:1,msgs:[['them','A lavagem inclui a limpeza interna.','09:18']]},

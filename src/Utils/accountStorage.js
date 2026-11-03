@@ -1,9 +1,17 @@
+import { DEMO_ACCOUNTS } from '../data/demoAccounts';
 import defaults from '../data/account-defaults.json';
 import { LOCATIONS, SEARCH_RADII, DEFAULT_LOCATION } from '../data/locations';
 
 export const ACCOUNT_STORAGE_KEY = 'carservice.account.v1';
 const cleanText = (value, max = 120) => typeof value === 'string' ? value.trim().slice(0, max) : '';
-export const freshAccount = () => JSON.parse(JSON.stringify(defaults));
+export const accountStorageKey = role => role === 'provider' ? 'carservice.account.provider.v1' : ACCOUNT_STORAGE_KEY;
+export function freshAccount(role = 'client') {
+  const account = JSON.parse(JSON.stringify(defaults));
+  const demo = DEMO_ACCOUNTS.find(item => item.role === role) || DEMO_ACCOUNTS[0];
+  account.role = demo.role;
+  account.user = { name: demo.name, email: demo.email, phone: '' };
+  return account;
+}
 export const normalizePlate = value => value.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, 7);
 export const validEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 export const validPhone = value => /^\d{10,11}$/.test(value.replace(/\D/g, ''));
@@ -15,7 +23,9 @@ export function formatPhone(value) {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, split)}${digits.length > split ? '-' + digits.slice(split) : ''}`;
 }
 
-export function validateAccount(value) {
+export function validateAccount(value, expectedRole) {
+  const role = value?.role || 'client';
+  if (!['client', 'provider'].includes(role) || (expectedRole && role !== expectedRole)) throw Error('Este backup pertence a outro tipo de conta. Entre no perfil correspondente para importá-lo.');
   if (!value || value.version !== 1 || !value.user || !Array.isArray(value.vehicles) || !value.preferences || !value.location) throw Error('O arquivo não tem o formato de conta do Car Service.');
   const user = {
     name: cleanText(value.user.name),
@@ -54,21 +64,21 @@ export function validateAccount(value) {
     location = { ...known, radius: candidate.radius };
   }
   if (!preferences.deviceLocation && location.id === 'device') location = { ...DEFAULT_LOCATION };
-  return { version: 1, user, vehicles, preferences: { notifications: preferences.notifications, deviceLocation: preferences.deviceLocation }, location };
+  return { version: 1, role, user, vehicles, preferences: { notifications: preferences.notifications, deviceLocation: preferences.deviceLocation }, location };
 }
 
-export function loadAccount() {
+export function loadAccount(role = 'client') {
   try {
-    const json = localStorage.getItem(ACCOUNT_STORAGE_KEY);
-    return { account: json ? validateAccount(JSON.parse(json)) : freshAccount(), error: '' };
+    const json = localStorage.getItem(accountStorageKey(role));
+    return { account: json ? validateAccount(JSON.parse(json), role) : freshAccount(role), error: '' };
   } catch {
-    return { account: freshAccount(), error: 'Não foi possível ler a conta salva. Os dados atuais ficam nesta sessão; importe um backup ou tente salvar novamente.' };
+    return { account: freshAccount(role), error: 'Não foi possível ler a conta salva. Os dados atuais ficam nesta sessão; importe um backup ou tente salvar novamente.' };
   }
 }
 
 export function saveAccount(account) {
   const validated = validateAccount(account);
-  localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(validated));
+  localStorage.setItem(accountStorageKey(validated.role), JSON.stringify(validated));
   return validated;
 }
 
@@ -76,7 +86,7 @@ export function downloadAccount(account) {
   const file = new Blob([JSON.stringify(validateAccount(account), null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(file);
   const link = document.createElement('a');
-  link.href = url; link.download = 'carservice-conta.json';
+  link.href = url; link.download = account.role === 'provider' ? 'carservice-conta-prestador.json' : 'carservice-conta.json';
   document.body.appendChild(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

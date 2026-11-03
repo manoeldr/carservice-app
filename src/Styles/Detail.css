@@ -23,3 +23,6 @@
 .detail-style-3 { font-size: 18px; }
 .detail-style-2 { font-size: 16px; margin: 2px 0 0; }
 .detail-style-1 { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--line); }
+.detail-request-price { font-size: 19px; font-weight: 600; color: var(--red); margin-top: 14px; }
+.detail-person-label { font-size: 14px; color: var(--muted); margin-top: 5px; }
+.detail-own-offer { margin-top: 24px; }

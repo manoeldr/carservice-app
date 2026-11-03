@@ -69,3 +69,13 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
 
 .account-switch { width: 44px; height: 28px; border-radius: 14px; background: var(--line); padding: 3px; display: flex; justify-content: flex-start; flex-shrink: 0; }
 .account-switch > span { width: 22px; height: 22px; border-radius: 50%; background: #fff; }
+
+.publication-modal:focus { outline: none; }
+.publication-modal { max-height: 100%; }
+.publication-description { display: block; width: 100%; min-height: 110px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); padding: 14px 16px; font: inherit; resize: vertical; }
+.publication-description:focus { outline: 1px solid var(--red); }
+.publication-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.publication-grid label { font-size: 13px; }
+.publication-grid .settings-input { padding: 0 12px; }
+.publication-note { margin: 18px 0; font-size: 13px; }
+.profile-badge { display: inline-block; padding: 5px 9px; border-radius: 10px; background: var(--redsoft); color: var(--red); font-size: 12px; font-weight: 700; }

@@ -10,3 +10,8 @@
 .login-style-3 { font-size: 15px; }
 .login-style-2 { margin: 18px 0 12px; }
 .login-style-1 { margin-top: 22px; font-size: 16px; }
+.login-submit { margin-top: 24px; }
+.login-demo { margin-top: 18px; padding: 14px; background: var(--soft); border-radius: 14px; font-size: 13px; color: var(--muted); }
+.login-demo summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.login-demo p { margin-top: 14px; line-height: 1.5; }
+.login-demo span { display: block; }
