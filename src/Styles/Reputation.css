@@ -1,0 +1,46 @@
+.reputation-badge { display: inline-flex; align-items: center; gap: 4px; width: fit-content; white-space: nowrap; border-radius: 8px; padding: 4px 7px; font-size: 11px; font-weight: 700; }
+.reputation-bronze { background: #f6e8dc; color: #80502c; }
+.reputation-silver { background: #e9eef5; color: #445771; }
+.reputation-gold { background: #fff3cc; color: #7c5900; }
+.reputation-summary { padding: 18px; background: var(--soft); border-radius: 18px; margin: 22px 0; }
+.reputation-summary-heading { display: flex; align-items: flex-start; gap: 12px; justify-content: space-between; }
+.reputation-summary-heading h3 { font-size: 16px; }
+.reputation-summary-heading p { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.reputation-score { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 12px; }
+.reputation-score b { font-size: 28px; }
+.reputation-score b small { font-size: 15px; color: var(--muted); font-weight: 500; }
+.reputation-score > span { font-size: 12px; color: var(--muted); }
+.reputation-summary progress { display: block; width: 100%; height: 8px; border: 0; border-radius: 4px; overflow: hidden; background: var(--line); accent-color: var(--red); }
+.reputation-summary progress::-webkit-progress-bar { background: var(--line); }
+.reputation-summary progress::-webkit-progress-value { background: var(--red); border-radius: 4px; }
+.reputation-explanation { font-size: 12px; line-height: 1.6; color: var(--muted); margin-top: 12px; }
+.reputation-page > h2 { font-size: 25px; }
+.reputation-page > .sub { font-size: 15px; }
+.reputation-page .settings-section-title { font-size: 20px; }
+.reputation-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.reputation-breakdown > div { padding: 16px; border: 1px solid var(--line); border-radius: 16px; }
+.reputation-breakdown span { display: block; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.reputation-breakdown b { font-size: 23px; }
+.reputation-breakdown small { font-size: 14px; font-weight: 400; color: var(--muted); }
+.reputation-levels { list-style: none; margin-bottom: 16px; }
+.reputation-levels li { padding: 12px 0; display: flex; gap: 14px; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
+.reputation-levels b { width: 52px; flex-shrink: 0; }
+.reputation-levels span { color: var(--muted); }
+.reputation-achievements { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.reputation-achievement { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; padding: 18px 10px; border-radius: 16px; border: 1px dashed var(--line); color: var(--muted); }
+.reputation-achievement b { font-size: 13px; }
+.reputation-achievement small { font-size: 11px; }
+.reputation-achievement.is-earned { border: 1px solid var(--redsoft); color: var(--red); background: var(--redsoft); }
+.reputation-rules > div { display: flex; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid var(--line); }
+.reputation-rules > div:last-child { border-bottom: 0; }
+.reputation-rules span { flex: 1; }
+.reputation-rules b { font-size: 14px; }
+.reputation-rules small { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 4px; }
+.reputation-rules strong { color: var(--red); }
+.reputation-window { margin-top: 14px; }
+.reputation-history { list-style: none; }
+.reputation-history li { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.reputation-history div { flex: 1; }
+.reputation-history b { font-size: 14px; overflow-wrap: anywhere; }
+.reputation-history small { display: block; color: var(--muted); font-size: 12px; margin-top: 5px; }
+.reputation-history > li > span { color: var(--red); font-size: 14px; font-weight: 700; }

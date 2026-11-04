@@ -108,6 +108,45 @@ Uma tela própria reúne as informações sobre armazenamento e os controles par
 
 A ajuda oferece perguntas frequentes expansíveis, busca sem diferenciação de acentos e atalhos para veículos, localização e privacidade. Também explica os limites do protótipo.
 
+## Gamificação, reputação e prioridade
+
+O catálogo do cliente é ordenado por **reputação** por padrão. A pontuação combina **avaliações (70%)** e **atividade (30%)**. O cliente também pode escolher menor distância ou menor preço, mantendo os filtros de veículo, categoria e região.
+
+Os prestadores recebem níveis e conquistas:
+
+| Nível | Requisitos |
+| --- | --- |
+| Bronze | Início da jornada |
+| Prata | 65 pontos, média de pelo menos 4 e 3 avaliações |
+| Ouro | 85 pontos, média de pelo menos 4,5 e 5 avaliações |
+
+O prestador consulta a pontuação, a composição, as regras, as conquistas e o histórico em **Minha conta → Minha reputação**, ou pelo selo na tela inicial.
+
+### Pontos por participação
+
+| Ação | Pontos de atividade | Limite |
+| --- | --- | --- |
+| Acessar o app em um novo dia | +5 | Uma vez por dia |
+| Publicar um serviço | +10 | Até 3 publicações por dia |
+| Primeira resposta a um pedido | +5 | Uma vez por pedido, até 5 por dia |
+| Completar nome, e-mail e celular | +10 | Uma única vez |
+
+A resposta precisa ter pelo menos 8 caracteres para registrar a participação. A atividade considera os últimos 30 dias, com teto de 100 pontos; a conquista de perfil completo permanece. Os prestadores do catálogo têm métricas iniciais fictícias para permitir a demonstração.
+
+### Como a pontuação é calculada
+
+A qualidade usa uma média ajustada pela quantidade de avaliações: são acrescentadas 5 avaliações de referência com nota 3,5 ao cálculo, para moderar o impacto de poucas avaliações. Esse resultado é convertido em até 70 pontos. Um prestador sem avaliações recebe zero nessa parcela.
+
+A atividade inicial de demonstração é somada aos pontos das ações válidas. O total, limitado a 100, é convertido em até 30 pontos. A soma das duas parcelas produz a reputação de 0 a 100. Em caso de empate no catálogo, a menor distância tem preferência.
+
+O cliente pode avaliar um prestador de 1 a 5 estrelas e deixar um comentário nos detalhes de um serviço. Cada perfil cliente tem uma avaliação por prestador; editar substitui a anterior, e todos os serviços do mesmo prestador usam a mesma reputação. As avaliações são de demonstração, sem validação de uma contratação real.
+
+A prioridade dá **destaque nas buscas dos clientes**. Os pedidos continuam disponíveis para todos os prestadores da região, sem exclusividade ou promessa de contratação.
+
+Os eventos e avaliações ficam em JSON na chave `carservice.reputation.v1` do `localStorage`. A reputação é compartilhada entre os perfis locais e sincroniza entre abas do mesmo navegador/endereço. Não faz parte do backup de dados pessoais, e permanece quando um perfil volta aos dados de exemplo.
+
+Arquivos principais: `src/data/reputationRules.js`, `src/Utils/reputation.js`, `src/Utils/reputationStorage.js` e `src/Pages/Reputation.jsx`.
+
 ## Tecnologias
 
 | Tecnologia | Uso |
@@ -183,6 +222,7 @@ Para obter uma cópia em arquivo, use **Minha conta → Privacidade e segurança
 | Localização da conta | JSON no navegador; incluída no backup exportado |
 | Localização do visitante | Apenas durante a sessão |
 | Favoritos e mensagens | Apenas durante a sessão; reiniciam ao recarregar |
+| Reputação, avaliações e eventos de atividade | JSON local compartilhado, separado do backup do perfil |
 | Senhas | Não são armazenadas |
 | Pedidos e ofertas publicados | JSON no navegador, compartilhado entre os dois perfis locais |
 

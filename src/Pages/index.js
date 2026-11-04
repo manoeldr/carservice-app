@@ -12,3 +12,4 @@ export { Privacy } from './Privacy';
 export { Help } from './Help';
 export { Guest } from './Guest';
 export { ProviderHome } from './ProviderHome';
+export { Reputation } from './Reputation';

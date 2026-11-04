@@ -2,3 +2,7 @@
 .servicecard-style-3 { font-weight: 600; font-size: 17px; margin: 10px 0 4px; }
 .servicecard-style-2 { font-weight: 800; font-size: 20px; }
 .servicecard-style-1 { color: var(--muted); font-size: 14px; margin-top: 4px; line-height: 1.4; }
+
+.servicecard-reputation { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 7px; }
+.servicecard-reputation > span:first-child { display: inline-flex; gap: 3px; align-items: center; font-size: 12px; font-weight: 600; }
+.servicecard-reputation > span:first-child > svg { color: #b47c00; }

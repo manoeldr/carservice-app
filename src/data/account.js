@@ -2,6 +2,8 @@ export const VEHICLE_TYPES = [
   { id: 'carros', label: 'Carro' }, { id: 'motos', label: 'Moto' }, { id: 'outros', label: 'Outro' },
 ];
 export const HELP_TOPICS = [
+  { question: 'Como funciona a prioridade dos prestadores?', answer: 'O catálogo é ordenado por reputação: avaliações valem até 70 pontos e atividade vale até 30. Os níveis Bronze, Prata e Ouro indicam a evolução. A atividade tem limites por ação e considera os últimos 30 dias. No perfil prestador, abra Minha conta e depois Minha reputação para consultar as regras e conquistas.' },
+  { question: 'Como avalio um prestador?', answer: 'Entre como cliente e abra os detalhes de um serviço. Escolha de 1 a 5 estrelas em Sua avaliação e salve. Você pode editar a nota; ela substitui a anterior e não aumenta a quantidade de avaliações. Neste protótipo, a avaliação é demonstrativa.' },
   { question: 'Como encontro um serviço?', answer: 'No Início, busque pelo nome do serviço ou prestador. Escolha Carros, Motos ou Outros e use Filtrar para selecionar óleo, pneus, lavagem e outras categorias.' },
   { question: 'Como mudo a região da busca?', answer: 'Toque na localização no Início ou em Minha conta. Escolha a região e o raio de busca. Você também pode usar a localização do dispositivo se permitir o acesso no navegador.', action: 'location', actionLabel: 'Alterar localização' },
   { question: 'Os prestadores e preços são reais?', answer: 'Não. Este é um protótipo acadêmico. Os serviços, prestadores, avaliações e preços são fictícios. Cada região recebe um catálogo de demonstração.' },

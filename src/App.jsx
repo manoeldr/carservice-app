@@ -8,9 +8,11 @@ import { regionalServices } from './data/regionalServices';
 import { authenticateDemo } from './data/demoAccounts';
 import { createPublication, demoRequestsFor } from './data/marketplace';
 import { SERVICES, CHATS0 } from './data/index';
+import { attachReputations, buildReputations, recordActivity, setReview } from './Utils/reputation';
+import { loadReputation, saveReputation, REPUTATION_STORAGE_KEY } from './Utils/reputationStorage';
 import { accountStorageKey, freshAccount, loadAccount, saveAccount } from './Utils/accountStorage';
 import { MARKETPLACE_STORAGE_KEY, loadMarketplace, saveMarketplace } from './Utils/marketplaceStorage';
-import { Login, Signup, Home, ProviderHome, Saved, Detail, Chats, Chat, Account, PersonalData, Vehicles, Privacy, Help, Guest } from './Pages';
+import { Login, Signup, Home, ProviderHome, Saved, Detail, Chats, Chat, Account, PersonalData, Vehicles, Privacy, Help, Guest, Reputation } from './Pages';
 import './Styles/App.css';
 
 const mergeEntries = (current, added) => {
@@ -22,6 +24,9 @@ const newSession = role => ({ saved: [], chats: role === 'provider' ? [] : CHATS
 export default function App() {
   const [initial] = useState(loadAccount);
   const [initialMarket] = useState(loadMarketplace);
+  const [initialReputation] = useState(loadReputation);
+  const [reputationData, setReputationData] = useState(initialReputation.data);
+  const [reputationError, setReputationError] = useState(initialReputation.error);
   const [account, setAccount] = useState(initial.account);
   const [storageError, setStorageError] = useState(initial.error);
   const [marketplace, setMarketplace] = useState(initialMarket.data);
@@ -49,8 +54,21 @@ export default function App() {
   const { saved, chats } = sessions[role];
   const location = authenticated ? account.location : guestLocation;
   const preferences = authenticated ? account.preferences : { notifications: false, deviceLocation: true };
-  const privateScreen = ['account', 'saved', 'chats', 'personal', 'vehicles', 'privacy'].includes(scr);
+  const privateScreen = ['account', 'saved', 'chats', 'personal', 'vehicles', 'privacy', 'reputation'].includes(scr);
 
+  function trackProviderActivity(type, subject = '', label = '') {
+    try {
+      const current = loadReputation();
+      if (current.error) throw Error(current.error);
+      const next = recordActivity(current.data, type, subject, label);
+      setReputationData(next === current.data ? next : saveReputation(next));
+      setReputationError('');
+      return true;
+    } catch { setReputationError('A atividade não pôde ser salva para a reputação. Verifique o armazenamento do navegador.'); return false; }
+  }
+  function trackCompleteProfile(value) {
+    if (value.role === 'provider' && value.user.phone.replace(/\D/g, '').length >= 10) trackProviderActivity('profile');
+  }
   function setSaved(value) {
     setSessions(current => ({ ...current, [role]: { ...current[role], saved: typeof value === 'function' ? value(current[role].saved) : value } }));
   }
@@ -74,6 +92,7 @@ export default function App() {
       setAccount(validated); registerLocation(validated.location);
       setAuthenticated(true); setStorageError(''); setToast(''); setModal(false); setShowLocation(false);
       setProviderView('requests'); setProviderVehicle('carros'); setScr('home');
+      if (validated.role === 'provider') { trackProviderActivity('login'); trackCompleteProfile(validated); }
       return true;
     } catch { return false; }
   }
@@ -104,6 +123,7 @@ export default function App() {
   }, [toast]);
   useEffect(() => {
     const sync = event => {
+      if (event.key === REPUTATION_STORAGE_KEY) { const loaded = loadReputation(); setReputationData(loaded.data); setReputationError(loaded.error); return; }
       if (event.key !== MARKETPLACE_STORAGE_KEY) return;
       const loaded = loadMarketplace(); setMarketplace(loaded.data); setMarketError(loaded.error);
     };
@@ -115,7 +135,7 @@ export default function App() {
     try {
       if (next.role !== role) throw Error('Perfil incompatível.');
       const validated = saveAccount(next);
-      registerLocation(validated.location); setAccount(validated); setStorageError('');
+      registerLocation(validated.location); setAccount(validated); setStorageError(''); trackCompleteProfile(validated);
       return true;
     } catch {
       setStorageError('Não foi possível salvar a conta neste navegador. Seus dados anteriores foram mantidos.');
@@ -151,7 +171,7 @@ export default function App() {
       const key = kind === 'offer' ? 'offers' : 'requests';
       const next = saveMarketplace({ ...current.data, [key]: [entry, ...current.data[key]] });
       setMarketplace(next); setMarketError(''); setModal(false);
-      if (kind === 'offer') { setProviderView('offers'); setProviderVehicle(entry.cat); setProviderReset(value => value + 1); }
+      if (kind === 'offer') { trackProviderActivity('publish', entry.id, `Publicou: ${entry.t}`); setProviderView('offers'); setProviderVehicle(entry.cat); setProviderReset(value => value + 1); }
       setToast(kind === 'offer' ? 'Serviço publicado! Ele já está disponível para os clientes da região.' : 'Pedido publicado! Ele já está disponível para os prestadores da região.');
       return true;
     } catch {
@@ -160,7 +180,10 @@ export default function App() {
     }
   }
 
-  const services = useMemo(() => servicesAtLocation([...marketplace.offers, ...catalog], location), [marketplace.offers, catalog, location]);
+  const rawServices = useMemo(() => servicesAtLocation([...marketplace.offers, ...catalog], location), [marketplace.offers, catalog, location]);
+  const reputations = useMemo(() => buildReputations(rawServices, reputationData), [rawServices, reputationData]);
+  const services = useMemo(() => attachReputations(rawServices, reputations), [rawServices, reputations]);
+  const providerReputation = reputations.get('provider');
   const requests = useMemo(() => servicesAtLocation([...marketplace.requests, ...requestCatalog], location), [marketplace.requests, requestCatalog, location]);
   const entries = useMemo(() => [...services, ...requests], [services, requests]);
   const nearbyServices = useMemo(() => services.filter(service => (regionIds.has(service.id) || service.kind === 'offer') && service.distance <= location.radius), [services, location.radius, regionIds]);
@@ -186,26 +209,41 @@ export default function App() {
     setChatId(chat.id); setScr('chat'); setPrev('detail');
   }
   function send(id, text) {
+    const conversation = chats.find(chat => chat.id === id);
+    const entry = conversation && svcOf(conversation.sid);
+    if (provider && entry?.kind === 'request' && text.trim().length >= 8) trackProviderActivity('reply', entry.id, `Respondeu: ${entry.t}`);
     const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     setChats(current => current.map(chat => chat.id === id ? { ...chat, time, msgs: [...chat.msgs, ['me', text, time]] } : chat));
+  }
+  function rateSelected(stars, comment) {
+    const service = svcOf(sel);
+    if (!authenticated || role !== 'client' || !service?.providerId || service.kind === 'request') return false;
+    try {
+      const current = loadReputation();
+      if (current.error) throw Error(current.error);
+      const next = saveReputation(setReview(current.data, service.providerId, stars, comment));
+      setReputationData(next); setReputationError('');
+      return true;
+    } catch { setReputationError('Não foi possível salvar a avaliação neste navegador.'); return false; }
   }
   const main = ['home', 'saved', 'chats', 'account'].includes(scr);
   const currentChat = chats.find(chat => chat.id === chatId);
 
   return <div className="app" style={{ transform: `translate(-50%,-50%) scale(${scale})` }}>
-    {authenticated && (storageError || marketError) && <p className="storage-warning" role="alert">{storageError || marketError}</p>}
+    {authenticated && (storageError || marketError || reputationError) && <p className="storage-warning" role="alert">{storageError || marketError || reputationError}</p>}
     {scr === 'login' && <Login go={go} login={login} explore={explore} />}
     {scr === 'signup' && <Signup go={go} setUser={registerClient} />}
-    {scr === 'home' && (provider ? <ProviderHome requests={nearbyRequests} offers={ownOffers} saved={saved} toggle={toggle} open={openSvc} publish={() => setModal(true)} location={location} openLocation={openLocation} go={go} view={providerView} setView={setProviderView} vehicle={providerVehicle} setVehicle={setProviderVehicle} resetKey={providerReset} /> : <Home location={location} openLocation={openLocation} isGuest={!authenticated} services={nearbyServices} saved={authenticated ? saved : []} toggle={toggle} open={openSvc} setModal={value => { if (!authenticated && value) { setScr('account'); setToast('Entre ou crie uma conta para pedir um serviço.'); return; } setModal(value); }} go={go} />)}
+    {scr === 'home' && (provider ? <ProviderHome requests={nearbyRequests} offers={ownOffers} saved={saved} toggle={toggle} open={openSvc} publish={() => setModal(true)} location={location} openLocation={openLocation} go={go} view={providerView} setView={setProviderView} vehicle={providerVehicle} setVehicle={setProviderVehicle} resetKey={providerReset} reputation={providerReputation} /> : <Home location={location} openLocation={openLocation} isGuest={!authenticated} services={nearbyServices} saved={authenticated ? saved : []} toggle={toggle} open={openSvc} setModal={value => { if (!authenticated && value) { setScr('account'); setToast('Entre ou crie uma conta para pedir um serviço.'); return; } setModal(value); }} go={go} />)}
     {!authenticated && privateScreen && <Guest section={scr} go={go} location={location} openLocation={openLocation} />}
     {authenticated && scr === 'saved' && <Saved services={entries} saved={saved} toggle={toggle} open={openSvc} />}
-    {scr === 'detail' && <Detail s={svcOf(sel)} role={authenticated ? role : null} saved={authenticated && saved.includes(sel)} toggle={toggle} back={() => setScr(prev)} chat={startChat} />}
+    {scr === 'detail' && <Detail s={svcOf(sel)} role={authenticated ? role : null} saved={authenticated && saved.includes(sel)} toggle={toggle} back={() => setScr(prev)} chat={startChat} review={reputationData.reviews.find(review => review.providerId === svcOf(sel)?.providerId)} rate={rateSelected} login={() => go('login')} />}
     {authenticated && scr === 'chats' && <Chats chats={chats} open={openChat} go={go} />}
     {authenticated && scr === 'chat' && currentChat && <Chat c={currentChat} svc={svcOf(currentChat.sid)} back={() => setScr('chats')} send={send} openSvc={openSvc} />}
-    {authenticated && scr === 'account' && <Account user={user} role={role} vehicles={vehicles} preferences={preferences} setPreferences={setPreferences} location={location} openLocation={openLocation} go={go} logout={logout} />}
+    {authenticated && scr === 'account' && <Account user={user} role={role} reputation={providerReputation} vehicles={vehicles} preferences={preferences} setPreferences={setPreferences} location={location} openLocation={openLocation} go={go} logout={logout} />}
     {authenticated && scr === 'personal' && <PersonalData user={user} back={backToAccount} save={value => { if (!setUser(value)) return false; setScr('account'); setToast('Dados pessoais salvos.'); return true; }} />}
     {authenticated && scr === 'vehicles' && <Vehicles vehicles={vehicles} back={backToAccount} save={value => { if (!updateAccount({ ...account, vehicles: value })) return false; setToast('Lista de veículos atualizada.'); return true; }} />}
     {authenticated && scr === 'privacy' && <Privacy account={account} setPreferences={setPreferences} restore={updateAccount} reset={resetAccount} back={backToAccount} />}
+    {authenticated && provider && scr === 'reputation' && <Reputation reputation={providerReputation} events={reputationData.events} back={backToAccount} />}
     {scr === 'help' && <Help back={backToAccount} go={go} openLocation={openLocation} />}
     {main && <Tabs cur={scr} go={go} unread={authenticated && preferences.notifications && chats.some(chat => chat.unread)} />}
     {authenticated && modal && (provider ? <ServicePublishModal location={location} openLocation={openLocation} close={() => setModal(false)} publish={draft => publish('offer', draft)} /> : <RequestModal location={location} vehicles={vehicles} openLocation={openLocation} close={() => setModal(false)} publish={draft => publish('request', draft)} />)}

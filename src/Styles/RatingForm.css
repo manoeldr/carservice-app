@@ -1,0 +1,9 @@
+.rating-section { margin: 28px 0 10px; border-top: 1px solid var(--line); padding-top: 24px; }
+.rating-section h2 { font-size: 22px; }
+.rating-section > p { font-size: 14px; color: var(--muted); margin: 8px 0 16px; line-height: 1.5; }
+.rating-stars { display: flex; gap: 6px; padding: 0; margin: 16px 0; border: 0; }
+.rating-stars legend { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.rating-stars button { color: var(--muted); display: flex; padding: 6px; border-radius: 8px; }
+.rating-stars button.is-filled { color: #b47c00; }
+.rating-section .publication-description { min-height: 86px; font-size: 14px; }
+.rating-demo-note { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 12px 0 16px; }

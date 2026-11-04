@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ReputationBadge } from '../Components/ReputationBadge';
 import { Icon } from '../Components/Icon';
 import { RequestCard } from '../Components/RequestCard';
 import { ServiceCard } from '../Components/ServiceCard';
@@ -9,7 +10,7 @@ import { locationLabel } from '../data/locations';
 import '../Styles/Home.css';
 import '../Styles/ProviderHome.css';
 
-export function ProviderHome({ requests, offers, saved, toggle, open, publish, location, openLocation, go, view, setView, vehicle, setVehicle, resetKey }) {
+export function ProviderHome({ requests, offers, saved, toggle, open, publish, location, openLocation, go, view, setView, vehicle, setVehicle, resetKey, reputation }) {
   const [query, setQuery] = useState('');
   const [types, setTypes] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -23,7 +24,7 @@ export function ProviderHome({ requests, offers, saved, toggle, open, publish, l
     <main className="home provider-home">
       <header className="home-header">
         <div className="row home-heading"><h1>Car Service</h1><button className="home-settings" aria-label="Ajustes" onClick={() => go('account')}><Icon n="filter" /></button></div>
-        <div className="provider-home-profile"><span className="profile-badge">Prestador</span><span>Encontre oportunidades na sua região</span></div>
+        <div className="provider-home-profile"><span className="profile-badge">Prestador</span><button onClick={() => go('reputation')} aria-label="Ver minha reputação"><ReputationBadge reputation={reputation} showScore /></button></div>
         <div className="provider-home-views" aria-label="Conteúdo do início"><button aria-pressed={view === 'requests'} className={view === 'requests' ? 'is-active' : ''} onClick={() => setView('requests')}>Pedidos de clientes</button><button aria-pressed={view === 'offers'} className={view === 'offers' ? 'is-active' : ''} onClick={() => setView('offers')}>Meus serviços<span>{offers.length}</span></button></div>
         <div className="field home-search"><Icon n="search" s={22} /><input aria-label={view === 'requests' ? 'Buscar pedidos' : 'Buscar meus serviços'} placeholder={view === 'requests' ? 'Qual pedido você procura?' : 'Buscar nos serviços publicados'} value={query} onChange={event => setQuery(event.target.value)} /></div>
         <button className="row home-location" aria-label="Alterar localização" aria-haspopup="dialog" onClick={openLocation}><span className="home-accent"><Icon n="pin" /></span><b>{locationLabel(location)}</b><span className="home-muted">· {location.radius} km</span><Icon n="down" s={18} /></button>

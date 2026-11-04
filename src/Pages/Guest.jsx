@@ -2,8 +2,9 @@ import { Icon } from '../Components/Icon';
 import { PageHeader } from '../Components/PageHeader';
 import '../Styles/Guest.css';
 
-const TITLES = { account: 'Minha conta', saved: 'Salvos', chats: 'Conversas', personal: 'Dados pessoais', vehicles: 'Meus veículos', privacy: 'Privacidade e segurança' };
+const TITLES = { account: 'Minha conta', saved: 'Salvos', chats: 'Conversas', personal: 'Dados pessoais', vehicles: 'Meus veículos', privacy: 'Privacidade e segurança', reputation: 'Minha reputação' };
 const DESCRIPTIONS = {
+  reputation: 'Entre como prestador para consultar sua reputação.',
   account: 'Entre ou crie sua conta para cadastrar seus dados e veículos.',
   saved: 'Entre ou crie sua conta para salvar seus serviços favoritos.',
   chats: 'Entre ou crie sua conta para conversar com os prestadores.',

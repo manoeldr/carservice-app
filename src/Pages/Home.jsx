@@ -1,3 +1,4 @@
+import { sortByPriority } from '../Utils/reputation';
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../Components/Icon';
 import { ServiceCard } from '../Components/ServiceCard';
@@ -12,14 +13,16 @@ export function Home({ services, saved, toggle, open, setModal, go, location, op
   const [vehicle, setVehicle] = useState('carros');
   const [query, setQuery] = useState('');
   const [types, setTypes] = useState([]);
+  const [order, setOrder] = useState('reputation');
   const [showFilters, setShowFilters] = useState(false);
   const listRef = useRef(null);
-  const list = filterServices(services, { vehicle, query, types });
+  const filtered = filterServices(services, { vehicle, query, types });
+  const list = order === 'reputation' ? sortByPriority(filtered) : [...filtered].sort((a, b) => order === 'distance' ? a.km - b.km : a.p - b.p);
   const available = filterServices(services, { vehicle, query });
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = 0;
-  }, [vehicle, query, types, location]);
+  }, [vehicle, query, types, location, order]);
 
   return <>
     <main className="home">
@@ -52,7 +55,8 @@ export function Home({ services, saved, toggle, open, setModal, go, location, op
           <p>{SERVICE_TYPES.filter(type => types.includes(type.id)).map(type => type.label).join(' · ')}</p>
           <button className="lnk" onClick={() => setTypes([])}>Limpar</button>
         </div>}
-        <p className="home-demo-note">Serviços de demonstração · prestadores fictícios</p>
+        <div className="home-order"><label htmlFor="service-order">Ordenar por</label><select id="service-order" value={order} onChange={event => setOrder(event.target.value)}><option value="reputation">Reputação</option><option value="distance">Menor distância</option><option value="price">Menor preço</option></select></div>
+        <p className="home-demo-note">{order === 'reputation' ? 'Prioridade: avaliações (70%) + atividade (30%)' : 'Serviços de demonstração · prestadores fictícios'}</p>
         <div className="home-services" ref={listRef} tabIndex={0} aria-label="Lista de serviços em destaque">
           {list.length ? <div className="grid">{list.map(service => <ServiceCard key={service.id} s={service} saved={saved.includes(service.id)} toggle={toggle} open={open} />)}</div> : <div className="home-empty"><p>Nenhum serviço encontrado nesta região. Tente outra busca, ajuste os filtros ou aumente a distância.</p>{types.length > 0 && <button className="lnk" onClick={() => setTypes([])}>Limpar filtros</button>}<button className="lnk home-change-location" onClick={openLocation}>Alterar região ou distância</button></div>}
         </div>

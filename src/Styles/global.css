@@ -79,3 +79,5 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
 .publication-grid .settings-input { padding: 0 12px; }
 .publication-note { margin: 18px 0; font-size: 13px; }
 .profile-badge { display: inline-block; padding: 5px 9px; border-radius: 10px; background: var(--redsoft); color: var(--red); font-size: 12px; font-weight: 700; }
+
+.toast { pointer-events: none; }
