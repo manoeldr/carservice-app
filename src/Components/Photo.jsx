@@ -1,8 +1,9 @@
+import { publicAsset } from '../Utils/publicAsset';
 import '../Styles/Photo.css';
 
 const BG={1:['#3b414a','#15171b'],2:['#9aa2ac','#4a5058'],3:['#2a3038','#0f1114'],4:['#363a41','#17191d'],5:['#4a5059','#22252a'],6:['#1a1c20','#08090a'],7:['#47434f','#1c1b21'],8:['#5a636d','#2a2f35']};
 export function Photo({s}){
-if(s.img)return <img src={s.img} alt={s.t} loading="lazy" decoding="async"  className="photo-style-2"/>;
+if(s.img)return <img src={publicAsset(s.img)} alt={s.t} loading="lazy" decoding="async"  className="photo-style-2"/>;
 const[a,b]=BG[s.id]||BG[1],id='g'+s.id;
 const W=<><circle cx={150} cy={105} r={64} fill="#111316"/><circle cx={150} cy={105} r={42} fill="#b7bcc3"/><circle cx={150} cy={105} r={12} fill="#6d737b"/>{[0,72,144,216,288].map(r=><rect key={r} x={146} y={66} width={8} height={30} rx={3} fill="#8b9199" transform={`rotate(${r} 150 105)`}/>)}</>;
 const S={

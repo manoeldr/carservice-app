@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { publicAsset } from '../Utils/publicAsset';
 import { Icon } from './Icon';
 import { useModalDialog } from './useModalDialog';
 import { locationLabel } from '../data/locations';
@@ -27,7 +28,7 @@ export function ServicePublishModal({ close, publish, location, openLocation }) 
     <label htmlFor="offer-description">Descrição</label><textarea className="publication-description" id="offer-description" placeholder="Explique o que está incluído e como funciona o atendimento." maxLength={2000} value={draft.desc} onChange={update('desc')} required />
     <div className="publication-grid"><div><label htmlFor="offer-price">Preço a partir de (R$)</label><input className="settings-input" id="offer-price" inputMode="decimal" placeholder="189,90" value={draft.p} onChange={update('p')} required /></div><div><label htmlFor="offer-duration">Duração (opcional)</label><input className="settings-input" id="offer-duration" placeholder="40–60 min" maxLength={80} value={draft.dur} onChange={update('dur')} /></div></div>
     <div className="publication-grid"><div><label htmlFor="offer-vehicle-type">Tipo de veículo</label><select className="settings-input" id="offer-vehicle-type" value={draft.cat} onChange={update('cat')}>{VEHICLE_TYPES.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}</select></div><div><label htmlFor="offer-category">Categoria</label><select className="settings-input" id="offer-category" value={draft.serviceType} onChange={update('serviceType')}>{SERVICE_TYPES.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}</select></div></div>
-    <div className="service-publish-photo"><img src={PUBLICATION_PHOTOS[draft.serviceType]} alt="Imagem ilustrativa da categoria escolhida" /><p>Foto ilustrativa da categoria</p></div>
+    <div className="service-publish-photo"><img src={publicAsset(PUBLICATION_PHOTOS[draft.serviceType])} alt="Imagem ilustrativa da categoria escolhida" /><p>Foto ilustrativa da categoria</p></div>
     <label>Localização</label><button type="button" className="field request-location" onClick={openLocation} aria-label="Alterar localização do serviço"><Icon n="pin" /><span className="service-publish-location">{locationLabel(location)}</span><Icon n="down" /></button>
     <p className="settings-note publication-note">A oferta ficará visível para o perfil cliente neste navegador.</p>
     {error && <p className="settings-error" role="alert">{error}</p>}<button className="btn red" type="submit">Publicar serviço</button>

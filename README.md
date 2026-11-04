@@ -156,6 +156,21 @@ Para visualizar esse build localmente:
 npm run preview
 ```
 
+## Apresentação no GitHub Pages
+
+Endereço do app: **https://manoeldr.github.io/carservice-app/**
+
+Em **Settings → Pages → Source**, selecione **GitHub Actions**. O workflow `.github/workflows/deploy.yml` instala as dependências, gera o build com base `/carservice-app/` e publica `dist/` após cada push na `main`.
+
+Os caminhos das fotos usam a base do Vite para funcionar tanto localmente quanto no GitHub Pages. Para testar o mesmo build de publicação:
+
+```bash
+npm run build -- --base=/carservice-app/
+npm run preview
+```
+
+Use o mesmo navegador e endereço para apresentar a troca entre cliente e prestador: os dados da demonstração são locais.
+
 ## Como os dados são salvos
 
 Dados pessoais, veículos, preferências e localização da conta são serializados em JSON no `localStorage`. O cliente usa a chave `carservice.account.v1`; o prestador usa `carservice.account.provider.v1`. Backups incluem o tipo de perfil e só podem ser importados no perfil correspondente. Backups antigos de cliente continuam compatíveis. Esses dados permanecem após recarregar a página no mesmo navegador e endereço de acesso.
