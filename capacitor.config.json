@@ -1,0 +1,6 @@
+{
+  "appId": "com.manoeldr.carservice",
+  "appName": "Car Service",
+  "webDir": "dist",
+  "backgroundColor": "#ffffff"
+}

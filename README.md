@@ -289,3 +289,74 @@ Autores e links de cada foto estão em [public/fotos/CREDITOS.md](public/fotos/C
 ## Repositório
 
 [github.com/manoeldr/carservice-app](https://github.com/manoeldr/carservice-app)
+
+## PWA e aplicativos Android/iOS
+
+A interface usa o viewport real (`100dvh`), com largura máxima de 480px em computadores. No celular ocupa a tela disponível, respeita áreas seguras e mantém o cabeçalho do catálogo fixo. A lista de serviços tem rolagem própria; formulários e modais também podem rolar.
+
+O PWA tem manifesto, ícones e service worker gerado pelo `vite-plugin-pwa`. Após o primeiro acesso online ao build publicado, os arquivos do aplicativo e fotos locais ficam disponíveis offline. A fonte externa pode cair para a fonte do sistema. Atualizações entram ao fechar as instâncias antigas e reabrir o aplicativo, sem forçar recarregamento de formulários.
+
+- Android: abrir o site HTTPS no Chrome e usar **Instalar aplicativo / Adicionar à tela inicial**.
+- iPhone: abrir no Safari, **Compartilhar → Adicionar à Tela de Início**.
+- Para testar o PWA local: `npm run build` e `npm run preview`. O service worker não é ativado no servidor de desenvolvimento.
+
+### Dados
+
+Os perfis, publicações e reputação continuam serializados em JSON no `localStorage` do navegador ou WebView. O backup de conta em JSON continua disponível. Cada instalação/origem possui seu próprio armazenamento: navegador, PWA e app nativo não devem ser considerados sincronizados. Não existe servidor nem sincronização entre aparelhos; remover o aplicativo ou limpar seus dados pode apagar os registros. Conversas e favoritos continuam apenas em memória durante a sessão.
+
+### Android (APK)
+
+O projeto Capacitor fica em `android/`, com identificador `com.manoeldr.carservice`. Requer Node 22+, Android Studio/SDK e Java 21.
+
+```bash
+npm ci
+npm run native:sync
+npm run android:open
+```
+
+No Android Studio, aguardar a sincronização Gradle e gerar o APK pelo menu **Build → Generate App Bundles or APKs → Generate APKs**. Alternativamente, com SDK e Java configurados:
+
+```bash
+npm run android:apk
+```
+
+Saída: `android/app/build/outputs/apk/debug/app-debug.apk`. É um APK de depuração para demonstração. Distribuição em loja requer build release e assinatura própria.
+
+Também foi incluído `.github/workflows/android-apk.yml`: após enviar os arquivos ao GitHub, abrir **Actions → Android APK de apresentação → Run workflow** e baixar o artifact `car-service-android-debug` ao concluir. Esse workflow ainda precisa ser executado para validar a compilação Android.
+
+### iOS (iPhone/iPad)
+
+O projeto nativo fica em `ios/`, usando Swift Package Manager. Requer macOS e **Xcode 26+** completo; somente Command Line Tools não basta.
+
+```bash
+npm ci
+npm run native:sync
+npm run ios:open
+```
+
+No Xcode, selecionar o target **App**, configurar a equipe em **Signing & Capabilities**, escolher o iPhone conectado ou um simulador e executar **Run**. Para distribuição, usar **Product → Archive** e o fluxo de assinatura/distribuição Apple. iOS não utiliza APK; a exportação assinada pode produzir um IPA conforme o método de distribuição disponível na conta Apple.
+
+Sempre executar `npm run native:sync` após alterações web antes de recompilar os aplicativos. O build nativo usa caminhos relativos e arquivos locais; o deploy GitHub Pages mantém seu próprio comando com `--base=/carservice-app/`.
+
+## Gestão do serviço e pontos por conclusão
+
+No perfil **prestador**, abrir um pedido de cliente, tocar em **Conversar com cliente** e usar o menu de três pontos **Gerenciar serviço**:
+
+1. **Aguardando aceite → Aceitar ou recusar**. A recusa tem confirmação e encerra esse atendimento.
+2. **Aceito → Cancelar ou concluir**. O cancelamento exige justificativa de 10 a 500 caracteres, registrada com data no histórico da conversa.
+3. **Concluir → Foto obrigatória**. Pode capturar pela câmera ou escolher JPG, PNG ou WebP da galeria. A foto é convertida para JPEG, redimensionada para até 1000px e comprimida antes de salvar.
+4. Ao confirmar o comprovante, o serviço é concluído e gera **100 pontos**, uma única vez. Não é possível concluir novamente nem pontuar por recusa/cancelamento.
+
+A validação da foto é **demonstrativa**, baseada apenas na presença de um arquivo de imagem legível. Não existe OCR, conferência de placa, aprovação por pessoa ou servidor. O usuário deve fotografar o veículo com a placa visível. A foto não é enviada pela internet.
+
+Em **Conta → Pontos e recompensas**, o prestador vê saldo, histórico e benefícios fictícios de mobilidade (200 pontos), delivery (300) e acessórios (500). O resgate tem confirmação, desconta o saldo e gera um código `DEMO-…`, sem integração ou validade em parceiros reais. Esses pontos não são a nota de reputação usada para ordenar o catálogo.
+
+Status, motivo, foto em base64, mensagens desses atendimentos e resgates ficam no JSON `carservice.orders.v1` do `localStorage`. O saldo é calculado pelas conclusões menos os resgates, sem crédito separado que possa duplicar ao reabrir. Os atendimentos voltam à lista de conversas após recarregar, mesmo que a região mude. Pedidos reais publicados pelo perfil cliente neste dispositivo também aparecem como conversas desse cliente; pedidos de clientes fictícios não são atribuídos a ele. Conversas antigas do catálogo continuam apenas na sessão.
+
+Em caso de falta de espaço, o aplicativo informa o erro e mantém o estado anterior, sem concluir nem creditar pontos. O backup de conta não inclui os atendimentos/fotos/pontos. Limpar os dados do aplicativo remove os registros locais. A demonstração não possui proteção contra alteração manual do armazenamento nem validação antifraude.
+
+Validações automatizadas das transições, comprovante, justificativa, saldo e resgate:
+
+```bash
+npm test
+```

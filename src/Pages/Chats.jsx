@@ -12,7 +12,7 @@ return(<div className="scroll chats-style-18" >
     <div className="row chats-style-13" ><button className={('chip'+(f==='all'?' on':'')) + " chats-style-12"}  onClick={()=>setF('all')}>Todas</button><button className={('chip'+(f==='un'?' on':'')) + " chats-style-11"}  onClick={()=>setF('un')}>Não lidas · {un}</button></div>
         {list.map(c=><div key={c.id} className="row chats-style-10"  onClick={()=>open(c.id)}>
     <div className="av chats-style-9" >{c.ini}</div>
-    <div  className="chats-style-8"><b  className="chats-style-7">{c.by}</b><div  className="chats-style-6">{c.svc}</div><div data-unread={Boolean(c.unread)}  className="chats-style-5">{lastOf(c)}</div></div>
+    <div  className="chats-style-8"><b  className="chats-style-7">{c.by}</b><div  className="chats-style-6">{c.svc}</div><div data-unread={Boolean(c.unread)}  className="chats-style-5">{c.orderStatus || lastOf(c)}</div></div>
     <div  className="chats-style-4"><span data-unread={Boolean(c.unread)}  className="chats-style-3">{c.time}</span>{c.unread>0&&<span className="badge">{c.unread}</span>}</div></div>)}
         {!list.length&&<p className="sub chats-style-2" >Nenhuma conversa por aqui ainda.</p>}
     <p className="center row chats-style-1" ><Ic n="lock" s={18}/>Combine os detalhes antes de contratar.</p></div>)}

@@ -13,3 +13,4 @@ export { Help } from './Help';
 export { Guest } from './Guest';
 export { ProviderHome } from './ProviderHome';
 export { Reputation } from './Reputation';
+export { Rewards } from './Rewards';

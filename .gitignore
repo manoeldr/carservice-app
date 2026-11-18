@@ -15,3 +15,9 @@ outputs/
 .env.*
 !.env.example
 carservice-conta*.json
+
+# Assinaturas e artefatos nativos
+*.jks
+*.keystore
+*.ipa
+*.xcarchive

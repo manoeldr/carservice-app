@@ -14,6 +14,8 @@ import { accountStorageKey, freshAccount, loadAccount, saveAccount } from './Uti
 import { MARKETPLACE_STORAGE_KEY, loadMarketplace, saveMarketplace } from './Utils/marketplaceStorage';
 import { Login, Signup, Home, ProviderHome, Saved, Detail, Chats, Chat, Account, PersonalData, Vehicles, Privacy, Help, Guest, Reputation } from './Pages';
 import './Styles/App.css';
+import { ORDERS_STORAGE_KEY, loadOrders, saveOrders, createOrder, transitionOrder, addOrderMessage, redeemReward, ORDER_STATUS } from './Utils/serviceOrders';
+import { Rewards } from './Pages/Rewards';
 
 const mergeEntries = (current, added) => {
   const ids = new Set(current.map(item => item.id));
@@ -24,6 +26,9 @@ const newSession = role => ({ saved: [], chats: role === 'provider' ? [] : CHATS
 export default function App() {
   const [initial] = useState(loadAccount);
   const [initialMarket] = useState(loadMarketplace);
+  const [initialOrders] = useState(loadOrders);
+  const [ordersData, setOrdersData] = useState(initialOrders.data);
+  const [ordersError, setOrdersError] = useState(initialOrders.error);
   const [initialReputation] = useState(loadReputation);
   const [reputationData, setReputationData] = useState(initialReputation.data);
   const [reputationError, setReputationError] = useState(initialReputation.error);
@@ -40,7 +45,6 @@ export default function App() {
   const [sessions, setSessions] = useState(() => ({ client: newSession('client'), provider: newSession('provider') }));
   const [modal, setModal] = useState(false);
   const [toast, setToast] = useState('');
-  const [scale, setScale] = useState(1);
   const [showLocation, setShowLocation] = useState(false);
   const [catalog, setCatalog] = useState(SERVICES);
   const [regionIds, setRegionIds] = useState(() => new Set(SERVICES.map(service => service.id)));
@@ -51,10 +55,18 @@ export default function App() {
   const [providerReset, setProviderReset] = useState(0);
   const { user, vehicles, role } = account;
   const provider = authenticated && role === 'provider';
-  const { saved, chats } = sessions[role];
+  const { saved } = sessions[role];
+  const orderChats = ordersData.orders.filter(order => role === 'provider' || order.service.ownerId === 'client').map(order => ({
+    id: order.id, orderId: order.id, sid: order.service.id,
+    by: role === 'provider' ? order.service.by : order.providerName,
+    ini: (role === 'provider' ? order.service.by : order.providerName).split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase(),
+    svc: order.service.t, orderStatus: ORDER_STATUS[order.status], time: new Date(order.updatedAt).toLocaleDateString('pt-BR'), unread: 0,
+    msgs: order.messages.map(message => [message.sender === role ? 'me' : 'them', message.text, new Date(message.at).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})]),
+  }));
+  const chats = [...orderChats, ...sessions[role].chats];
   const location = authenticated ? account.location : guestLocation;
   const preferences = authenticated ? account.preferences : { notifications: false, deviceLocation: true };
-  const privateScreen = ['account', 'saved', 'chats', 'personal', 'vehicles', 'privacy', 'reputation'].includes(scr);
+  const privateScreen = ['account', 'saved', 'chats', 'personal', 'vehicles', 'privacy', 'reputation', 'rewards'].includes(scr);
 
   function trackProviderActivity(type, subject = '', label = '') {
     try {
@@ -112,17 +124,13 @@ export default function App() {
   }
 
   useEffect(() => {
-    const resize = () => setScale(Math.min(innerWidth / 430, innerHeight / 932, 1.2));
-    resize(); addEventListener('resize', resize);
-    return () => removeEventListener('resize', resize);
-  }, []);
-  useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(''), 3000);
     return () => clearTimeout(timer);
   }, [toast]);
   useEffect(() => {
     const sync = event => {
+      if (event.key === ORDERS_STORAGE_KEY) { const loaded = loadOrders(); setOrdersData(loaded.data); setOrdersError(loaded.error); return; }
       if (event.key === REPUTATION_STORAGE_KEY) { const loaded = loadReputation(); setReputationData(loaded.data); setReputationError(loaded.error); return; }
       if (event.key !== MARKETPLACE_STORAGE_KEY) return;
       const loaded = loadMarketplace(); setMarketplace(loaded.data); setMarketError(loaded.error);
@@ -189,7 +197,7 @@ export default function App() {
   const nearbyServices = useMemo(() => services.filter(service => (regionIds.has(service.id) || service.kind === 'offer') && service.distance <= location.radius), [services, location.radius, regionIds]);
   const nearbyRequests = useMemo(() => requests.filter(request => (requestRegionIds.has(request.id) || request.ownerId === 'client') && request.distance <= location.radius), [requests, requestRegionIds, location.radius]);
   const ownOffers = services.filter(service => service.kind === 'offer' && service.ownerId === 'provider');
-  const svcOf = id => entries.find(service => service.id === id);
+  const svcOf = id => entries.find(service => service.id === id) || ordersData.orders.find(order => order.service.id === id)?.service;
   const toggle = id => {
     if (!authenticated) { setScr('saved'); return; }
     setSaved(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id]);
@@ -201,6 +209,11 @@ export default function App() {
   function openChat(id) { setChatId(id); setChats(current => current.map(chat => chat.id === id ? { ...chat, unread: 0 } : chat)); setScr('chat'); }
   function startChat(service) {
     if (!authenticated) { setScr('chats'); return; }
+    if (provider && service.kind === 'request') {
+      const result = updateOrders(data => createOrder(data, service, user.name));
+      if (result) { setToast(result); return; }
+      setChatId(`order:${service.id}`); setScr('chat'); setPrev('detail'); return;
+    }
     let chat = chats.find(item => item.sid === service.id);
     if (!chat) {
       chat = { id: Date.now(), sid: service.id, by: service.by, ini: service.ini, svc: service.t, time: 'Agora', unread: 0, msgs: [] };
@@ -211,9 +224,36 @@ export default function App() {
   function send(id, text) {
     const conversation = chats.find(chat => chat.id === id);
     const entry = conversation && svcOf(conversation.sid);
+    if (conversation?.orderId) {
+      const error = updateOrders(data => addOrderMessage(data, conversation.orderId, role, text));
+      if (error) { setToast(error); return false; }
+      if (provider && text.trim().length >= 8) trackProviderActivity('reply', entry.id, `Respondeu: ${entry.t}`);
+      return true;
+    }
     if (provider && entry?.kind === 'request' && text.trim().length >= 8) trackProviderActivity('reply', entry.id, `Respondeu: ${entry.t}`);
     const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     setChats(current => current.map(chat => chat.id === id ? { ...chat, time, msgs: [...chat.msgs, ['me', text, time]] } : chat));
+  }
+  // Status, comprovante e saldo são persistidos juntos: uma conclusão nunca
+  // credita pontos duas vezes, nem deixa o saldo separado do comprovante.
+  function updateOrders(mutate) {
+    try {
+      const loaded = loadOrders();
+      if (loaded.error) throw Error(loaded.error);
+      const next = saveOrders(mutate(loaded.data));
+      setOrdersData(next); setOrdersError(''); return '';
+    } catch (error) {
+      const message = error.name === 'QuotaExceededError' ? 'Armazenamento cheio. Não foi possível salvar o comprovante; o serviço continua no estado anterior.' : error.message || 'Não foi possível salvar os dados do serviço.';
+      setOrdersError(message); return message;
+    }
+  }
+  function changeOrder(action, details) {
+    if (!provider || !currentChat?.orderId) return 'Somente o prestador pode gerenciar este serviço.';
+    return updateOrders(data => transitionOrder(data, currentChat.orderId, action, details));
+  }
+  function redeem(id) {
+    if (!provider) return 'Entre como prestador para resgatar pontos.';
+    return updateOrders(data => redeemReward(data, id));
   }
   function rateSelected(stars, comment) {
     const service = svcOf(sel);
@@ -229,8 +269,8 @@ export default function App() {
   const main = ['home', 'saved', 'chats', 'account'].includes(scr);
   const currentChat = chats.find(chat => chat.id === chatId);
 
-  return <div className="app" style={{ transform: `translate(-50%,-50%) scale(${scale})` }}>
-    {authenticated && (storageError || marketError || reputationError) && <p className="storage-warning" role="alert">{storageError || marketError || reputationError}</p>}
+  return <div className="app">
+    {authenticated && (storageError || marketError || reputationError || ordersError) && <p className="storage-warning" role="alert">{storageError || marketError || reputationError || ordersError}</p>}
     {scr === 'login' && <Login go={go} login={login} explore={explore} />}
     {scr === 'signup' && <Signup go={go} setUser={registerClient} />}
     {scr === 'home' && (provider ? <ProviderHome requests={nearbyRequests} offers={ownOffers} saved={saved} toggle={toggle} open={openSvc} publish={() => setModal(true)} location={location} openLocation={openLocation} go={go} view={providerView} setView={setProviderView} vehicle={providerVehicle} setVehicle={setProviderVehicle} resetKey={providerReset} reputation={providerReputation} /> : <Home location={location} openLocation={openLocation} isGuest={!authenticated} services={nearbyServices} saved={authenticated ? saved : []} toggle={toggle} open={openSvc} setModal={value => { if (!authenticated && value) { setScr('account'); setToast('Entre ou crie uma conta para pedir um serviço.'); return; } setModal(value); }} go={go} />)}
@@ -238,12 +278,13 @@ export default function App() {
     {authenticated && scr === 'saved' && <Saved services={entries} saved={saved} toggle={toggle} open={openSvc} />}
     {scr === 'detail' && <Detail s={svcOf(sel)} role={authenticated ? role : null} saved={authenticated && saved.includes(sel)} toggle={toggle} back={() => setScr(prev)} chat={startChat} review={reputationData.reviews.find(review => review.providerId === svcOf(sel)?.providerId)} rate={rateSelected} login={() => go('login')} />}
     {authenticated && scr === 'chats' && <Chats chats={chats} open={openChat} go={go} />}
-    {authenticated && scr === 'chat' && currentChat && <Chat c={currentChat} svc={svcOf(currentChat.sid)} back={() => setScr('chats')} send={send} openSvc={openSvc} />}
-    {authenticated && scr === 'account' && <Account user={user} role={role} reputation={providerReputation} vehicles={vehicles} preferences={preferences} setPreferences={setPreferences} location={location} openLocation={openLocation} go={go} logout={logout} />}
+    {authenticated && scr === 'chat' && currentChat && <Chat key={currentChat.id} c={currentChat} svc={svcOf(currentChat.sid)} back={() => setScr('chats')} send={send} openSvc={openSvc} order={ordersData.orders.find(order => order.id === currentChat.orderId)} provider={provider} changeOrder={changeOrder} rewards={() => go('rewards')} />}
+    {authenticated && scr === 'account' && <Account user={user} role={role} reputation={providerReputation} orders={ordersData} vehicles={vehicles} preferences={preferences} setPreferences={setPreferences} location={location} openLocation={openLocation} go={go} logout={logout} />}
     {authenticated && scr === 'personal' && <PersonalData user={user} back={backToAccount} save={value => { if (!setUser(value)) return false; setScr('account'); setToast('Dados pessoais salvos.'); return true; }} />}
     {authenticated && scr === 'vehicles' && <Vehicles vehicles={vehicles} back={backToAccount} save={value => { if (!updateAccount({ ...account, vehicles: value })) return false; setToast('Lista de veículos atualizada.'); return true; }} />}
     {authenticated && scr === 'privacy' && <Privacy account={account} setPreferences={setPreferences} restore={updateAccount} reset={resetAccount} back={backToAccount} />}
     {authenticated && provider && scr === 'reputation' && <Reputation reputation={providerReputation} events={reputationData.events} back={backToAccount} />}
+    {authenticated && provider && scr === 'rewards' && <Rewards data={ordersData} redeem={redeem} back={backToAccount} />}
     {scr === 'help' && <Help back={backToAccount} go={go} openLocation={openLocation} />}
     {main && <Tabs cur={scr} go={go} unread={authenticated && preferences.notifications && chats.some(chat => chat.unread)} />}
     {authenticated && modal && (provider ? <ServicePublishModal location={location} openLocation={openLocation} close={() => setModal(false)} publish={draft => publish('offer', draft)} /> : <RequestModal location={location} vehicles={vehicles} openLocation={openLocation} close={() => setModal(false)} publish={draft => publish('request', draft)} />)}
