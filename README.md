@@ -292,7 +292,7 @@ Autores e links de cada foto estão em [public/fotos/CREDITOS.md](public/fotos/C
 
 ## PWA e aplicativos Android/iOS
 
-A interface usa o viewport real (`100dvh`), com largura máxima de 480px em computadores. No celular ocupa a tela disponível, respeita áreas seguras e mantém o cabeçalho do catálogo fixo. A lista de serviços tem rolagem própria; formulários e modais também podem rolar.
+A interface usa o viewport real (`100dvh`), com largura máxima de 480px em computadores. No celular ocupa a tela disponível, respeita áreas seguras e mantém apenas a busca do catálogo fixa durante a rolagem. Título, localização, categorias, filtros e serviços rolam juntos; formulários e modais também podem rolar.
 
 O PWA tem manifesto, ícones e service worker gerado pelo `vite-plugin-pwa`. Após o primeiro acesso online ao build publicado, os arquivos do aplicativo e fotos locais ficam disponíveis offline. A fonte externa pode cair para a fonte do sistema. Atualizações entram ao fechar as instâncias antigas e reabrir o aplicativo, sem forçar recarregamento de formulários.
 

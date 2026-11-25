@@ -25,17 +25,21 @@ export function Home({ services, saved, toggle, open, setModal, go, location, op
   }, [vehicle, query, types, location, order]);
 
   return <>
-    <main className="home">
+    <main className="home" ref={listRef}>
       <header className="home-header">
         <div className="row home-heading">
           <h1>Car Service</h1>
           <button className="home-settings" onClick={() => go('account')} aria-label="Ajustes"><Icon n="filter" /></button>
         </div>
         {isGuest && <div className="home-guest-note"><span>Explorando como visitante</span><button className="lnk" onClick={() => go('login')}>Entrar</button></div>}
+      </header>
+      <div className="home-search-sticky">
         <div className="field home-search">
           <Icon n="search" s={24} />
           <input aria-label="Buscar serviços" placeholder="Qual serviço você procura?" value={query} onChange={event => setQuery(event.target.value)} />
         </div>
+      </div>
+      <div className="home-header home-location-controls">
         <button className="row home-location" aria-label="Alterar localização" aria-haspopup="dialog" onClick={openLocation}>
           <span className="home-accent"><Icon n="pin" /></span>
           <b>{locationLabel(location)}</b><span className="home-muted">· {location.radius} km</span><Icon n="down" s={18} />
@@ -43,7 +47,7 @@ export function Home({ services, saved, toggle, open, setModal, go, location, op
         <div className="row home-vehicles" aria-label="Tipo de veículo">
           {VEHICLE_TYPES.map(([key, icon, label]) => <button key={key} className={'chip' + (vehicle === key ? ' on' : '')} aria-pressed={vehicle === key} onClick={() => setVehicle(key)}><Icon n={icon} />{label}</button>)}
         </div>
-      </header>
+      </div>
       <section className="home-featured" aria-labelledby="featured-title">
         <div className="row home-featured-heading">
           <h2 id="featured-title">Serviços em destaque</h2>
@@ -57,7 +61,7 @@ export function Home({ services, saved, toggle, open, setModal, go, location, op
         </div>}
         <div className="home-order"><label htmlFor="service-order">Ordenar por</label><select id="service-order" value={order} onChange={event => setOrder(event.target.value)}><option value="reputation">Reputação</option><option value="distance">Menor distância</option><option value="price">Menor preço</option></select></div>
         <p className="home-demo-note">{order === 'reputation' ? 'Prioridade: avaliações (70%) + atividade (30%)' : 'Serviços de demonstração · prestadores fictícios'}</p>
-        <div className="home-services" ref={listRef} tabIndex={0} aria-label="Lista de serviços em destaque">
+        <div className="home-services" tabIndex={0} aria-label="Lista de serviços em destaque">
           {list.length ? <div className="grid">{list.map(service => <ServiceCard key={service.id} s={service} saved={saved.includes(service.id)} toggle={toggle} open={open} />)}</div> : <div className="home-empty"><p>Nenhum serviço encontrado nesta região. Tente outra busca, ajuste os filtros ou aumente a distância.</p>{types.length > 0 && <button className="lnk" onClick={() => setTypes([])}>Limpar filtros</button>}<button className="lnk home-change-location" onClick={openLocation}>Alterar região ou distância</button></div>}
         </div>
       </section>
